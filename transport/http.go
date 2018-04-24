@@ -38,6 +38,12 @@ func NewHTTPHandler(endpoints addendpoint.Set, logger log.Logger) http.Handler {
 		encodeResponse,
 		options...,
 	))
+	r.Methods("Post").Path("/Hello").Handler(httptransport.NewServer(
+		endpoints.HelloEndpoint,
+		decodeHelloRequest,
+		encodeResponse,
+		options...,
+	))
 	return r
 }
 
@@ -51,6 +57,14 @@ func decodeSumRequest(_ context.Context, r *http.Request) (interface{}, error) {
 
 func decodeConcatRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	var request pb.ConcatReq
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		return nil, err
+	}
+	return &request, nil
+}
+
+func decodeHelloRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var request pb.HelloReq
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		return nil, err
 	}

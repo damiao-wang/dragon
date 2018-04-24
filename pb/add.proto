@@ -3,31 +3,39 @@ syntax = "proto3";
 package pb;
 
 service Add {
-    // Sums two integers.
-    rpc Sum (SumReq) returns (SumResp) {}
-  
-    // Concatenates two strings
-    rpc Concat (ConcatReq) returns (ConcatResp) {}
-  }
-  
-  // The sum request contains two parameters.
-  message SumReq {
-    int64 a = 1;
-    int64 b = 2;
-  }
-  
-  // The sum response contains the result of the calculation.
-  message SumResp {
-    int64 v = 1;
-  }
-  
-  // The Concat request contains two parameters.
-  message ConcatReq {
-    string a = 1;
-    string b = 2;
-  }
-  
-  // The Concat response contains the result of the concatenation.
-  message ConcatResp {
-    string v = 1;
-  }
+  // Sums two integers.
+  rpc Sum (SumReq) returns (SumResp) {}
+
+  // Concatenates two strings
+  rpc Concat (ConcatReq) returns (ConcatResp) {}
+}
+
+// The sum request contains two parameters.
+message SumReq {
+  int64 a = 1;
+  int64 b = 2;
+}
+
+// The sum response contains the result of the calculation.
+message SumResp {
+  int64 v = 1;
+}
+
+// The Concat request contains two parameters.
+message ConcatReq {
+  string a = 1;
+  string b = 2;
+}
+
+// The Concat response contains the result of the concatenation.
+message ConcatResp {
+  string v = 1;
+}
+
+message HelloReq {
+  string name = 1;
+}
+
+message HelloResp {
+  string v = 1;
+}

@@ -13,6 +13,7 @@ import (
 type Set struct {
 	SumEndpoint    endpoint.Endpoint
 	ConcatEndpoint endpoint.Endpoint
+	HelloEndpoint  endpoint.Endpoint
 }
 
 func New(svc service.AddService, logger log.Logger) Set {
@@ -28,9 +29,16 @@ func New(svc service.AddService, logger log.Logger) Set {
 		concatEndpoint = LoggingMiddleware(log.With(logger, "method", "Concat"))(concatEndpoint)
 	}
 
+	var helloEndpoint endpoint.Endpoint
+	{
+		helloEndpoint = MakeHelloEndpoint(svc)
+		helloEndpoint = LoggingMiddleware(log.With(logger, "method", "Hello"))(helloEndpoint)
+	}
+
 	return Set{
 		SumEndpoint:    sumEndpoint,
 		ConcatEndpoint: concatEndpoint,
+		HelloEndpoint:  helloEndpoint,
 	}
 }
 
@@ -47,5 +55,12 @@ func MakeConcatEndpoint(svc service.AddService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		req := request.(*pb.ConcatReq)
 		return svc.Concat(ctx, req)
+	}
+}
+
+func MakeHelloEndpoint(svc service.AddService) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		req := request.(*pb.HelloReq)
+		return svc.Hello(ctx, req)
 	}
 }

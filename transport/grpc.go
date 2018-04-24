@@ -16,6 +16,7 @@ import (
 type grpcServer struct {
 	sum    grpctransport.Handler
 	concat grpctransport.Handler
+	hello  grpctransport.Handler
 }
 
 // NewGRPCServer makes a set of endpoints available as a gRPC AddServer.
@@ -35,6 +36,12 @@ func NewGRPCServer(endpoints addendpoint.Set, logger log.Logger) pb.AddServer {
 			endpoints.ConcatEndpoint,
 			decodeGRPCConcatRequest,
 			encodeGRPCConcatResponse,
+			options...,
+		),
+		hello: grpctransport.NewServer(
+			endpoints.HelloEndpoint,
+			decodeGRPCHelloRequest,
+			encodeGRPCHelloResponse,
 			options...,
 		),
 	}
@@ -57,6 +64,14 @@ func (s *grpcServer) Concat(ctx oldcontext.Context, req *pb.ConcatReq) (*pb.Conc
 	return rep.(*pb.ConcatResp), nil
 }
 
+func (s *grpcServer) Hello(ctx oldcontext.Context, req *pb.HelloReq) (*pb.HelloResp, error) {
+	_, rep, err := s.concat.ServeGRPC(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return rep.(*pb.HelloResp), nil
+}
+
 func decodeGRPCSumRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
 	return grpcReq.(*pb.SumReq), nil
 }
@@ -66,6 +81,10 @@ func decodeGRPCSumRequest(_ context.Context, grpcReq interface{}) (interface{}, 
 // server.
 func decodeGRPCConcatRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
 	return grpcReq.(*pb.ConcatReq), nil
+}
+
+func decodeGRPCHelloRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
+	return grpcReq.(*pb.HelloReq), nil
 }
 
 // encodeGRPCSumResponse is a transport/grpc.EncodeResponseFunc that converts a
@@ -79,4 +98,8 @@ func encodeGRPCSumResponse(_ context.Context, response interface{}) (interface{}
 // server.
 func encodeGRPCConcatResponse(_ context.Context, response interface{}) (interface{}, error) {
 	return response.(*pb.ConcatResp), nil
+}
+
+func encodeGRPCHelloResponse(_ context.Context, response interface{}) (interface{}, error) {
+	return response.(*pb.HelloResp), nil
 }
